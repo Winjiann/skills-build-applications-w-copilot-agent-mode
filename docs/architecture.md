@@ -1,6 +1,6 @@
 # OctoFit Tracker architecture
 
-OctoFit Tracker is a three-tier application for a school fitness program. The starter code includes API contracts and intentionally incomplete implementation points so you can use GitHub Copilot agent mode in a test-driven loop.
+OctoFit Tracker is a three-tier application for a school fitness program. Its API contracts and tests define expected behavior across presentation, logic, and data responsibilities.
 
 ![Three-tier OctoFit architecture](../.github/images/octofit-architecture.svg)
 
@@ -28,22 +28,24 @@ OctoFit Tracker is a three-tier application for a school fitness program. The st
 
 ## Implementation decisions
 
-Record your plan here before editing code.
+Implementation decisions:
 
-- Presentation tier decision:
-- Logic tier decision:
-- Data tier decision:
-- Activity tracking approach:
-- Team management approach:
-- Leaderboard approach:
-- Workout suggestions approach:
+- Presentation tier decision: Keep API-backed rendering in each capability component and use the shared API client, with accessible loading, empty, and error states.
+- Logic tier decision: Keep route handlers thin and implement validation and business behavior in the existing service functions, returning deliberate 4xx errors for invalid input.
+- Data tier decision: Enforce required model fields and defaults in Mongoose without changing the seed script's non-destructive, idempotent upsert behavior.
+- Activity tracking approach: Validate IDs, references, type, and positive minutes before creating an activity; calculate points from minutes and set the occurrence time on the server.
+- Team management approach: Require a non-empty name and valid optional member references; rely on the model's default empty members array.
+- Leaderboard approach: Sum activity points per team, include teams with no activity at zero, and assign ranks after sorting by points.
+- Workout suggestions approach: Find the user by email, prefer workouts matching their goal and then recent activity, and include a reason with each suggestion.
 
 ## Test plan
 
 Record the commands you run and what each failure means.
 
-- Data-tier command: `npm run test:data --prefix octofit-tracker/backend`
-- API command: `npm run test:api --prefix octofit-tracker/backend`
-- Frontend command: `npm test --prefix octofit-tracker/frontend`
-- Backend build command: `npm run build --prefix octofit-tracker/backend`
-- Frontend build command: `npm run build --prefix octofit-tracker/frontend`
+- Data-tier command: `npm run test:data --prefix octofit-tracker/backend` — passed (5 tests).
+- API command: `npm run test:api --prefix octofit-tracker/backend` — passed (4 tests).
+- Frontend command: `npm test --prefix octofit-tracker/frontend` — passed (15 tests).
+- Backend build command: `npm run build --prefix octofit-tracker/backend` — passed.
+- Frontend build command: `npm run build --prefix octofit-tracker/frontend` — passed.
+- Scaffold validation: `node .github/scripts/validate-exercise.mjs` — failed on existing template/workflow contract issues, including the README copy badge and a missing `.github/steps/2-step.md`; these are outside the application implementation.
+- Exercise validation tests: `node --test tests/exercise-validation.test.mjs` — failed on existing validator/template expectations, including the README copy badge contract; these are outside the application implementation.
